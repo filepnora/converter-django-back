@@ -1,13 +1,8 @@
-from django.shortcuts import render
-
 from django.http import HttpResponse
-
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
-
 from .models import Pairs
 from .serializers import PairSerializer
-import json
 
 
 def index(request):
@@ -15,20 +10,9 @@ def index(request):
 
 
 def value(r):
-    if (r == 'I'):
-        return 1
-    if (r == 'V'):
-        return 5
-    if (r == 'X'):
-        return 10
-    if (r == 'L'):
-        return 50
-    if (r == 'C'):
-        return 100
-    if (r == 'D'):
-        return 500
-    if (r == 'M'):
-        return 1000
+    if r in "IVXLDM":
+        for result in Pairs.objects.raw("SELECT id, arabic FROM roman_to_arabic_pairs WHERE roman = %s", r):
+            return result.arabic
     return -1
 
 
@@ -37,7 +21,6 @@ def romanToDecimal(str):
     i = 0
 
     while (i < len(str)):
-
         # Getting value of symbol s[i]
         s1 = value(str[i])
 
@@ -69,7 +52,9 @@ def romanToDecimal(str):
 @api_view(['POST'])
 def converter(request):
     roman = request.data.get("roman")
+    print("roman:", roman)
     arabic = romanToDecimal(roman)
+    print("arabic:", arabic)
     return HttpResponse(arabic)
 
 
