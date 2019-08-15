@@ -10,7 +10,7 @@ def index(request):
 
 
 def value(r):
-    if r in "IVXLDM":
+    if r in "IVXLCDM":
         for result in Pairs.objects.raw("SELECT id, arabic FROM roman_to_arabic_pairs WHERE roman = %s", r):
             return result.arabic
     return -1
